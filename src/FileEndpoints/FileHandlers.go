@@ -3,7 +3,6 @@ package FileEndpoints
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"hlsapi/src/Configuration"
 	"io"
 	"net/http"
@@ -78,7 +77,7 @@ func GetFileFromDisk(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := fmt.Sprintf("%s%c%s", Configuration.ReadConfiguration().StorageFolderPath, os.PathSeparator, filename)
+	path := filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, string(os.PathSeparator), filename)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		http.Error(w, "File not found", http.StatusNotFound)
 		return
