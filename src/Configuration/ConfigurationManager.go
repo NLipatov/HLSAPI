@@ -2,21 +2,17 @@ package Configuration
 
 import (
 	"encoding/json"
+	"hlsapi/src/Configuration/Models"
 	"os"
 )
 
 var _configurationPath = ""
 
-type Configuration struct {
-	Port              int    `json:"port"`
-	StorageFolderPath string `json:"storageFolderPath"`
-}
-
 func Init(configurationPath string) {
 	_configurationPath = configurationPath
 }
 
-func ReadConfiguration() Configuration {
+func ReadConfiguration() ConfigurationModels.Configuration {
 	if len(_configurationPath) == 0 {
 		panic("configuration manager was not initialized.")
 	}
@@ -25,7 +21,7 @@ func ReadConfiguration() Configuration {
 		panic(err)
 	}
 
-	config := Configuration{}
+	config := ConfigurationModels.Configuration{}
 	err = json.Unmarshal(configBytes, &config)
 	if err != nil {
 		panic(err)
