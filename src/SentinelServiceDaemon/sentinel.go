@@ -31,7 +31,7 @@ func Start(path string) {
 				log(fmt.Sprintf("Could not get file information. Filepath: %s", entryPath))
 			}
 
-			if fileInfo.ModTime().Minute() > configuration.SentinelServiceDaemonConfiguration.StorageLimitMinutes {
+			if int(time.Since(fileInfo.ModTime()).Minutes()) > configuration.SentinelServiceDaemonConfiguration.StorageLimitMinutes {
 				err = os.Remove(entryPath)
 				if err != nil {
 					log(fmt.Sprintf("Error on delition (%s): %s", err.Error(), entryPath))
