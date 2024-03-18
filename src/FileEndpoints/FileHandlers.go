@@ -15,6 +15,7 @@ func StoreFileOnDisk(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
+
 	err := r.ParseMultipartForm(300 * 1024 * 1024) // 300 MB max size
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -45,7 +46,7 @@ func StoreFileOnDisk(w http.ResponseWriter, r *http.Request) {
 
 			folder, filename := StorageFolderAndFilename(formFile.Filename)
 
-			fileOnDisk, err := os.OpenFile(filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, folder, filename), os.O_WRONLY|os.O_CREATE, 0666)
+			fileOnDisk, err := os.OpenFile(filepath.Join(Configuration.ReadConfiguration().Storage.StorageFolderPath, folder, filename), os.O_WRONLY|os.O_CREATE, 0666)
 			if err != nil {
 				http.Error(w, "Error creating formFile in storage", http.StatusInternalServerError)
 				return
@@ -77,7 +78,7 @@ func GetFileFromDisk(w http.ResponseWriter, r *http.Request) {
 
 	folder, filename := StorageFolderAndFilename(filename)
 
-	path := filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, folder, filename)
+	path := filepath.Join(Configuration.ReadConfiguration().Storage.StorageFolderPath, folder, filename)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		http.Error(w, "File not found", http.StatusNotFound)
 		return

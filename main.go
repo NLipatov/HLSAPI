@@ -17,14 +17,11 @@ func main() {
 
 	createStorageFolder(configuration)
 
-	if configuration.SentinelServiceDaemonConfiguration.ShouldRun {
-		go func() {
-			fmt.Println("Starting sentinel service daemon")
-			SentinelServiceDaemon.Start(configuration.StorageFolderPath)
-		}()
+	if configuration.Sentinel.ShouldRun {
+		go SentinelServiceDaemon.Start()
 	}
 
-	PORT := fmt.Sprintf(":%d", configuration.Port)
+	PORT := fmt.Sprintf(":%d", configuration.Server.Port)
 
 	http.HandleFunc("/store", FileEndpoints.StoreFileOnDisk)
 	http.HandleFunc("/get", FileEndpoints.GetFileFromDisk)
@@ -36,11 +33,11 @@ func main() {
 	}
 }
 
-func createStorageFolder(configuration ConfigurationModels.Configuration) {
-	_, err := os.Stat(configuration.StorageFolderPath)
+func createStorageFolder(configuration ConfigurationModels.ConfigurationRoot) {
+	_, err := os.Stat(configuration.Storage.StorageFolderPath)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			dirCreationError := os.Mkdir(configuration.StorageFolderPath, os.FileMode(744))
+			dirCreationError := os.Mkdir(configuration.Storage.StorageFolderPath, os.FileMode(0700))
 			if dirCreationError != nil {
 				panic(dirCreationError)
 			}

@@ -12,7 +12,7 @@ func Init(configurationPath string) {
 	_configurationPath = configurationPath
 }
 
-func ReadConfiguration() ConfigurationModels.Configuration {
+func ReadConfiguration() ConfigurationModels.ConfigurationRoot {
 	if len(_configurationPath) == 0 {
 		panic("configuration manager was not initialized.")
 	}
@@ -21,7 +21,7 @@ func ReadConfiguration() ConfigurationModels.Configuration {
 		panic(err)
 	}
 
-	config := ConfigurationModels.Configuration{}
+	config := ConfigurationModels.ConfigurationRoot{}
 	err = json.Unmarshal(configBytes, &config)
 	if err != nil {
 		panic(err)

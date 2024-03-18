@@ -1,13 +1,22 @@
 package ConfigurationModels
 
-type Configuration struct {
-	Port                               int                                `json:"port"`
-	StorageFolderPath                  string                             `json:"storageFolderPath"`
-	SentinelServiceDaemonConfiguration SentinelServiceDaemonConfiguration `json:"SentinelServiceDaemonSettings"`
+type ConfigurationRoot struct {
+	Server   ServerConfiguration   `json:"Server"`
+	Storage  StorageConfiguration  `json:"Storage"`
+	Sentinel SentinelConfiguration `json:"Sentinel"`
 }
 
-type SentinelServiceDaemonConfiguration struct {
+type ServerConfiguration struct {
+	Port int `json:"Port"`
+}
+
+type SentinelConfiguration struct {
 	ShouldRun                    bool `json:"ShouldRun"`
 	StorageLimitMinutes          int  `json:"StorageLimitMinutes"`
 	StorageChecksIntervalMinutes int  `json:"StorageChecksIntervalMinutes"`
+}
+
+type StorageConfiguration struct {
+	MaxFileSizeMb     int    `json:"MaxFileSizeMb"`
+	StorageFolderPath string `json:"StorageFolderPath"`
 }

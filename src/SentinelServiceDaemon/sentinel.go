@@ -9,49 +9,73 @@ import (
 	"time"
 )
 
-func Start(path string) {
-	configuration := getConfiguration()
-	if !configuration.SentinelServiceDaemonConfiguration.ShouldRun {
-		return
+func Start() {
+	for getConfiguration().Sentinel.ShouldRun {
+		log("Checking storage folder...")
+		processDirectory(getConfiguration().Storage.StorageFolderPath)
+		log("Sleep")
+		interval := getConfiguration().Sentinel.StorageChecksIntervalMinutes
+		time.Sleep(time.Duration(interval) * time.Minute)
 	}
+}
 
+func processDirectory(path string) {
+	log(fmt.Sprintf("checking %s\n", path))
 	entries, err := os.ReadDir(path)
 	if err != nil {
-		log(fmt.Sprintf("Error: %s", err.Error()))
+		panic(err)
+	}
+
+	if len(entries) == 0 {
+		err = os.Remove(path)
+		if err != nil {
+			panic(err)
+		}
 		return
 	}
 
 	for _, entry := range entries {
-		if entry.Type().IsDir() {
-			Start(filepath.Join(path, entry.Name()))
-		} else {
-			entryPath := filepath.Join(path, entry.Name())
-			fileInfo, err := os.Stat(entryPath)
-			if err != nil {
-				log(fmt.Sprintf("Could not get file information. Filepath: %s", entryPath))
-			}
+		entryPath := filepath.Join(path, entry.Name())
 
-			if int(time.Since(fileInfo.ModTime()).Minutes()) > configuration.SentinelServiceDaemonConfiguration.StorageLimitMinutes {
-				err = os.Remove(entryPath)
-				if err != nil {
-					log(fmt.Sprintf("Error on delition (%s): %s", err.Error(), entryPath))
-					continue
-				}
-				log(fmt.Sprintf("Deleted: %s", entryPath))
-			}
+		if entry.Type().IsDir() {
+			processDirectory(entryPath)
+		} else {
+			processFile(entryPath)
 		}
 	}
-
-	interval := getConfiguration().SentinelServiceDaemonConfiguration.StorageChecksIntervalMinutes
-	time.Sleep(time.Duration(interval) * time.Minute)
-	Start(configuration.StorageFolderPath)
 }
 
-func getConfiguration() ConfigurationModels.Configuration {
-	configuration := Configuration.ReadConfiguration()
-	return configuration
+func processFile(path string) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		log(fmt.Sprintf("Could not get file information. Filepath: %s", path))
+	}
+
+	modtime := fileInfo.ModTime()
+	log(fmt.Sprintf("modtime %d\n", modtime))
+	storageExpiresAt := modtime.Add(time.Duration(getConfiguration().Sentinel.StorageLimitMinutes) * time.Minute)
+	log(fmt.Sprintf("storageExpiresAt %d\n", storageExpiresAt))
+	storageExpired := time.Now().After(storageExpiresAt)
+	if storageExpired {
+		log("Time exceeded: " + path)
+	} else {
+		log("Time not exceeded: " + path)
+	}
+	if storageExpired {
+		err = os.Remove(path)
+		if err != nil {
+			log(fmt.Sprintf("Could not delete a file (%s): %s", err.Error(), path))
+			return
+		}
+		log(fmt.Sprintf("Deleted: %s", path))
+	}
 }
 
 func log(message string) {
 	fmt.Println("Sentinel: ", message)
+}
+
+func getConfiguration() ConfigurationModels.ConfigurationRoot {
+	configuration := Configuration.ReadConfiguration()
+	return configuration
 }

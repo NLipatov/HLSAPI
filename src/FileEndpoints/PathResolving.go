@@ -13,10 +13,17 @@ func StorageFolderAndFilename(originalFilename string) (string, string) {
 	folder := pathSequence[0]
 	filename := pathSequence[1]
 
-	_, err := os.Stat(filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, folder))
+	createFolderIfNotExists(Configuration.ReadConfiguration().Storage.StorageFolderPath)
+	createFolderIfNotExists(filepath.Join(Configuration.ReadConfiguration().Storage.StorageFolderPath, folder))
+
+	return folder, filename
+}
+
+func createFolderIfNotExists(path string) {
+	_, err := os.Stat(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			folderCreationError := os.Mkdir(filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, folder), 600)
+			folderCreationError := os.Mkdir(path, 0700)
 			if folderCreationError != nil {
 				panic(folderCreationError)
 			}
@@ -24,6 +31,4 @@ func StorageFolderAndFilename(originalFilename string) (string, string) {
 			panic(err)
 		}
 	}
-
-	return folder, filename
 }
