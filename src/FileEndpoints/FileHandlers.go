@@ -3,6 +3,7 @@ package FileEndpoints
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"hlsapi/src/Configuration"
 	"io"
 	"net/http"
@@ -23,7 +24,7 @@ func StoreFileOnDisk(w http.ResponseWriter, r *http.Request) {
 	uploadedFiles := r.MultipartForm.File["payload"]
 	for _, formfile := range uploadedFiles {
 		if CanFileBeStored(formfile.Filename) {
-			http.Error(w, "All files should be either .m3u8 or .ts", http.StatusBadRequest)
+			http.Error(w, "All files should be either .m3u8, .ts or .m4a", http.StatusBadRequest)
 			return
 		}
 	}
@@ -31,6 +32,7 @@ func StoreFileOnDisk(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Send files in a form-data with a 'payload' key", http.StatusBadRequest)
 		return
 	}
+
 	for _, formFile := range uploadedFiles {
 		func() {
 			f, openFileErr := formFile.Open()
@@ -41,7 +43,9 @@ func StoreFileOnDisk(w http.ResponseWriter, r *http.Request) {
 
 			defer f.Close()
 
-			fileOnDisk, err := os.OpenFile(filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, formFile.Filename), os.O_WRONLY|os.O_CREATE, 0666)
+			folder, filename := StorageFolderAndFilename(formFile.Filename)
+
+			fileOnDisk, err := os.OpenFile(filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, folder, filename), os.O_WRONLY|os.O_CREATE, 0666)
 			if err != nil {
 				http.Error(w, "Error creating formFile in storage", http.StatusInternalServerError)
 				return
@@ -59,14 +63,8 @@ func StoreFileOnDisk(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func CanFileBeStored(filename string) bool {
-	isM3U8 := filepath.Ext(filename) != ".m3u8"
-	isTs := filepath.Ext(filename) != ".ts"
-
-	return isM3U8 && isTs
-}
-
 func GetFileFromDisk(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Serving: %s\n", r.URL.Query().Get("filename"))
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -77,7 +75,9 @@ func GetFileFromDisk(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, string(os.PathSeparator), filename)
+	folder, filename := StorageFolderAndFilename(filename)
+
+	path := filepath.Join(Configuration.ReadConfiguration().StorageFolderPath, folder, filename)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		http.Error(w, "File not found", http.StatusNotFound)
 		return
