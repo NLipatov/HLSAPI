@@ -1,19 +1,20 @@
 package ConfigurationModels
 
 type ConfigurationRoot struct {
-	Server   ServerConfiguration   `json:"Server"`
-	Storage  StorageConfiguration  `json:"Storage"`
-	Sentinel SentinelConfiguration `json:"Sentinel"`
+	Server        ServerConfiguration        `json:"Server"`
+	Storage       StorageConfiguration       `json:"Storage"`
+	StorageDaemon StorageDaemonConfiguration `json:"StorageDaemon"`
 }
 
 type ServerConfiguration struct {
 	Port int `json:"Port"`
 }
 
-type SentinelConfiguration struct {
+type StorageDaemonConfiguration struct {
 	ShouldRun                    bool `json:"ShouldRun"`
 	StorageLimitMinutes          int  `json:"StorageLimitMinutes"`
 	StorageChecksIntervalMinutes int  `json:"StorageChecksIntervalMinutes"`
+	EnableLogging                bool `json:"EnableLogging"`
 }
 
 type StorageConfiguration struct {

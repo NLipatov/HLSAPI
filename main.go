@@ -1,48 +1,26 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"hlsapi/src/Configuration"
-	ConfigurationModels "hlsapi/src/Configuration/Models"
-	"hlsapi/src/FileEndpoints"
-	"hlsapi/src/SentinelServiceDaemon"
+	"hlsapi/Daemons/StorageDaemon/src"
+	"hlsapi/src/Domain/AppConfiguration"
+	httpHandlers "hlsapi/src/IOChannel/http"
 	"net/http"
-	"os"
 )
 
 func main() {
-	Configuration.Init(fmt.Sprintf("%s", "appSettings.json"))
-	configuration := Configuration.ReadConfiguration()
+	AppConfiguration.Initialize("appSettings.json")
 
-	createStorageFolder(configuration)
+	go StorageDaemon.Start()
 
-	if configuration.Sentinel.ShouldRun {
-		go SentinelServiceDaemon.Start()
-	}
+	PORT := fmt.Sprintf(":%d", AppConfiguration.ReadRoot().Server.Port)
 
-	PORT := fmt.Sprintf(":%d", configuration.Server.Port)
-
-	http.HandleFunc("/store", FileEndpoints.StoreFileOnDisk)
-	http.HandleFunc("/get", FileEndpoints.GetFileFromDisk)
+	http.HandleFunc("/store", httpHandlers.StoreFileOnDisk)
+	http.HandleFunc("/get", httpHandlers.GetFileFromDisk)
 
 	err := http.ListenAndServe(PORT, nil)
 	if err != nil {
 		fmt.Println(err)
 		return
-	}
-}
-
-func createStorageFolder(configuration ConfigurationModels.ConfigurationRoot) {
-	_, err := os.Stat(configuration.Storage.StorageFolderPath)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			dirCreationError := os.Mkdir(configuration.Storage.StorageFolderPath, os.FileMode(0700))
-			if dirCreationError != nil {
-				panic(dirCreationError)
-			}
-			return
-		}
-		panic(err)
 	}
 }

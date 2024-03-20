@@ -1,20 +1,23 @@
-package SentinelServiceDaemon
+package StorageDaemon
 
 import (
 	"fmt"
-	"hlsapi/src/Configuration"
-	ConfigurationModels "hlsapi/src/Configuration/Models"
+	"hlsapi/src/Domain/AppConfiguration"
 	"os"
 	"path/filepath"
 	"time"
 )
 
 func Start() {
-	for getConfiguration().Sentinel.ShouldRun {
+	for {
+		interval := AppConfiguration.ReadRoot().StorageDaemon.StorageChecksIntervalMinutes
+		if !AppConfiguration.ReadRoot().StorageDaemon.ShouldRun {
+			time.Sleep(time.Duration(interval) * time.Minute)
+		}
+
 		log("Checking storage folder...")
-		processDirectory(getConfiguration().Storage.StorageFolderPath)
+		processDirectory(AppConfiguration.ReadRoot().Storage.StorageFolderPath)
 		log("Sleep")
-		interval := getConfiguration().Sentinel.StorageChecksIntervalMinutes
 		time.Sleep(time.Duration(interval) * time.Minute)
 	}
 }
@@ -23,7 +26,8 @@ func processDirectory(path string) {
 	log(fmt.Sprintf("checking %s\n", path))
 	entries, err := os.ReadDir(path)
 	if err != nil {
-		panic(err)
+		log(fmt.Sprintf("Could not read path: %s\n", path))
+		return
 	}
 
 	if len(entries) == 0 {
@@ -52,15 +56,9 @@ func processFile(path string) {
 	}
 
 	modtime := fileInfo.ModTime()
-	log(fmt.Sprintf("modtime %d\n", modtime))
-	storageExpiresAt := modtime.Add(time.Duration(getConfiguration().Sentinel.StorageLimitMinutes) * time.Minute)
-	log(fmt.Sprintf("storageExpiresAt %d\n", storageExpiresAt))
+	storageExpiresAt := modtime.Add(time.Duration(AppConfiguration.ReadRoot().StorageDaemon.StorageLimitMinutes) * time.Minute)
 	storageExpired := time.Now().After(storageExpiresAt)
-	if storageExpired {
-		log("Time exceeded: " + path)
-	} else {
-		log("Time not exceeded: " + path)
-	}
+
 	if storageExpired {
 		err = os.Remove(path)
 		if err != nil {
@@ -72,10 +70,7 @@ func processFile(path string) {
 }
 
 func log(message string) {
-	fmt.Println("Sentinel: ", message)
-}
-
-func getConfiguration() ConfigurationModels.ConfigurationRoot {
-	configuration := Configuration.ReadConfiguration()
-	return configuration
+	if AppConfiguration.ReadRoot().StorageDaemon.EnableLogging {
+		fmt.Println("Storage Daemon: ", message)
+	}
 }
