@@ -8,12 +8,15 @@ import (
 	"strings"
 )
 
-func CanFileBeStored(filename string) bool {
-	isM3U8 := filepath.Ext(filename) == ".m3u8"
-	isTs := filepath.Ext(filename) == ".ts"
-	isM4a := filepath.Ext(filename) == ".m4a"
+var allowedExtensions = map[string]bool{
+	".m3u8": true,
+	".ts":   true,
+	".m4a":  true,
+}
 
-	return isM3U8 || isTs || isM4a
+func CanFileBeStored(filename string) bool {
+	ext := filepath.Ext(filename)
+	return allowedExtensions[ext]
 }
 
 func SplitIntoFolderAndFilename(originalFilename string) (string, string) {
