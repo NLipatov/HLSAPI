@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	"hlsapi/Daemons/StorageDaemon/src"
 	"hlsapi/src/Domain/AppConfiguration"
 	httpHandlers "hlsapi/src/IOChannel/http"
+	"hlsapi/src/Subdomain"
 	"net/http"
 )
 
 func main() {
 	AppConfiguration.Initialize("appSettings.json")
 
-	go StorageDaemon.Start()
+	go Subdomain.Start()
 
 	PORT := fmt.Sprintf(":%d", AppConfiguration.ReadRoot().Server.Port)
 
