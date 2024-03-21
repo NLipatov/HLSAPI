@@ -1,14 +1,13 @@
-package Application
+package tests
 
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
+	"hlsapi/src/Application"
 	"hlsapi/src/Domain/AppConfiguration"
-	ConfigurationModels "hlsapi/src/Domain/AppConfiguration/Models"
 	"hlsapi/src/Infrastructure"
+	"hlsapi/tests/TestEnvironmentSetup"
 	"os"
-	"path"
 	"strings"
 	"testing"
 )
@@ -21,7 +20,7 @@ func TestGetFileFromDisk(t *testing.T) {
 	folder, filename := pathArray[len(pathArray)-2], pathArray[len(pathArray)-1]
 
 	writeTo := bytes.Buffer{}
-	err := GetFileFromDisk(&writeTo, strings.Join([]string{folder, filename}, "_"), Infrastructure.DiskInteractor{})
+	err := Application.GetFileFromDisk(&writeTo, strings.Join([]string{folder, filename}, "_"), Infrastructure.DiskInteractor{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -70,7 +69,7 @@ func writeTestFile(tempDirPath string, content []byte) string {
 	testFolder := "test"
 	testFilename := "sample.m3u8"
 	testReader := bytes.NewReader(content)
-	err := StoreFileOnDisk(strings.Join([]string{testFolder, testFilename}, "_"), testReader, Infrastructure.DiskInteractor{})
+	err := Application.StoreFileOnDisk(strings.Join([]string{testFolder, testFilename}, "_"), testReader, Infrastructure.DiskInteractor{})
 
 	if err != nil {
 		panic(err)
@@ -81,34 +80,6 @@ func writeTestFile(tempDirPath string, content []byte) string {
 }
 
 func setupTestConfiguration(testTemporaryDirectory string) {
-	configurationPath := createConfigurationInTestFolder(testTemporaryDirectory, "testSettings.json")
+	configurationPath := TestEnvironmentSetup.CreateConfigurationInTestFolder(testTemporaryDirectory, "testSettings.json")
 	AppConfiguration.JsonConfigurationProvider{}.Initialize(configurationPath)
-}
-
-func createConfigurationInTestFolder(tempFolderPath string, configurationFilename string) string {
-	configurationRoot := ConfigurationModels.ConfigurationRoot{
-		Server: ConfigurationModels.ServerConfiguration{},
-		Storage: ConfigurationModels.StorageConfiguration{
-			MaxFileSizeMb:     100,
-			StorageFolderPath: tempFolderPath,
-		},
-		StorageDaemon: ConfigurationModels.StorageDaemonConfiguration{},
-	}
-
-	jsonBytes, err := json.MarshalIndent(configurationRoot, "", "\t")
-	if err != nil {
-		panic(err)
-	}
-
-	testConfigPath := path.Join(tempFolderPath, configurationFilename)
-	f, err := os.OpenFile(testConfigPath, os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		panic(err)
-	}
-
-	defer f.Close()
-
-	f.Write(jsonBytes)
-
-	return testConfigPath
 }

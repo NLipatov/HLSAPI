@@ -11,21 +11,21 @@ import (
 	"path/filepath"
 )
 
-func StoreFileOnDisk(filename string, src io.Reader, boundary Boundaries.StoreBoundary) error {
+func StoreFileOnDisk(filename string, readFrom io.Reader, boundary Boundaries.StoreBoundary) error {
 	if !Domain.CanFileBeStored(filename) {
 		return ApplicationLayerErrors.FileCantBeStored{}
 	}
 
-	folder, filename := Domain.GetStorageFolderAndFilename(filename, AppConfiguration.JsonConfigurationProvider{})
+	folder, filename := Domain.GetStorageFolderAndFilename(filename)
 	path := filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder, filename)
-	writer, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
-
-	defer writer.Close()
+	writeTo, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		return err
 	}
 
-	err = boundary.Store(writer, src)
+	defer writeTo.Close()
+
+	err = boundary.Store(writeTo, readFrom)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func StoreFileOnDisk(filename string, src io.Reader, boundary Boundaries.StoreBo
 }
 
 func GetFileFromDisk(writeTo io.Writer, requestedFileCode string, boundary Boundaries.GetBoundary) error {
-	folder, filename := Domain.GetStorageFolderAndFilename(requestedFileCode, AppConfiguration.JsonConfigurationProvider{})
+	folder, filename := Domain.GetStorageFolderAndFilename(requestedFileCode)
 	path := filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder, filename)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		return err

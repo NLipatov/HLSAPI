@@ -3,6 +3,7 @@ package Domain
 import (
 	"errors"
 	"fmt"
+	"hlsapi/src/Domain/AppConfiguration"
 	ConfigurationModels "hlsapi/src/Domain/AppConfiguration/Models"
 	"os"
 	"path/filepath"
@@ -24,12 +25,12 @@ func CanFileBeStored(filename string) bool {
 	return allowedExtensions[ext]
 }
 
-func GetStorageFolderAndFilename(originalFilename string, provider ConfigurationProvider) (string, string) {
+func GetStorageFolderAndFilename(originalFilename string) (string, string) {
 	pathSequence := strings.Split(originalFilename, "_")
 	folder := pathSequence[0]
 	filename := pathSequence[1]
 
-	CreateFolder(filepath.Join(provider.ReadRoot().Storage.StorageFolderPath, folder))
+	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder))
 
 	return folder, filename
 }
