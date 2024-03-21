@@ -16,8 +16,8 @@ func StoreFileOnDisk(filename string, src io.Reader, boundary Boundaries.StoreBo
 		return ApplicationLayerErrors.FileCantBeStored{}
 	}
 
-	folder, filename := Domain.SplitIntoFolderAndFilename(filename)
-	path := filepath.Join(AppConfiguration.ReadRoot().Storage.StorageFolderPath, folder, filename)
+	folder, filename := Domain.GetStorageFolderAndFilename(filename, AppConfiguration.JsonConfigurationProvider{})
+	path := filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder, filename)
 	writer, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
 
 	defer writer.Close()
@@ -34,8 +34,8 @@ func StoreFileOnDisk(filename string, src io.Reader, boundary Boundaries.StoreBo
 }
 
 func GetFileFromDisk(writeTo io.Writer, requestedFileCode string, boundary Boundaries.GetBoundary) error {
-	folder, filename := Domain.SplitIntoFolderAndFilename(requestedFileCode)
-	path := filepath.Join(AppConfiguration.ReadRoot().Storage.StorageFolderPath, folder, filename)
+	folder, filename := Domain.GetStorageFolderAndFilename(requestedFileCode, AppConfiguration.JsonConfigurationProvider{})
+	path := filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder, filename)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		return err
 	}

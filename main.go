@@ -9,11 +9,11 @@ import (
 )
 
 func main() {
-	AppConfiguration.Initialize("appSettings.json")
+	AppConfiguration.JsonConfigurationProvider{}.Initialize("appSettings.json")
 
 	go Subdomain.Start()
 
-	PORT := fmt.Sprintf(":%d", AppConfiguration.ReadRoot().Server.Port)
+	PORT := fmt.Sprintf(":%d", AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Server.Port)
 
 	http.HandleFunc("/store", httpHandlers.StoreFileOnDisk)
 	http.HandleFunc("/get", httpHandlers.GetFileFromDisk)

@@ -8,7 +8,10 @@ import (
 
 var configurationPath = ""
 
-func ReadRoot() ConfigurationModels.ConfigurationRoot {
+type JsonConfigurationProvider struct {
+}
+
+func (JsonConfigurationProvider) ReadRoot() ConfigurationModels.ConfigurationRoot {
 	if len(configurationPath) == 0 {
 		panic("configuration manager was not initialized.")
 	}
@@ -26,6 +29,6 @@ func ReadRoot() ConfigurationModels.ConfigurationRoot {
 	return config
 }
 
-func Initialize(configJsonPath string) {
+func (JsonConfigurationProvider) Initialize(configJsonPath string) {
 	configurationPath = configJsonPath
 }

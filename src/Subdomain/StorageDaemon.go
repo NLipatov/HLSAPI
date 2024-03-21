@@ -10,13 +10,14 @@ import (
 
 func Start() {
 	for {
-		interval := AppConfiguration.ReadRoot().StorageDaemon.StorageChecksIntervalMinutes
-		if !AppConfiguration.ReadRoot().StorageDaemon.ShouldRun {
+		interval := AppConfiguration.JsonConfigurationProvider{}.ReadRoot().StorageDaemon.StorageChecksIntervalMinutes
+		shouldRun := AppConfiguration.JsonConfigurationProvider{}.ReadRoot().StorageDaemon.ShouldRun
+		if shouldRun {
 			time.Sleep(time.Duration(interval) * time.Minute)
 		}
 
 		log("Checking storage folder...")
-		processDirectory(AppConfiguration.ReadRoot().Storage.StorageFolderPath)
+		processDirectory(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath)
 		log("Sleep")
 		time.Sleep(time.Duration(interval) * time.Minute)
 	}
@@ -56,7 +57,7 @@ func processFile(path string) {
 	}
 
 	modtime := fileInfo.ModTime()
-	storageExpiresAt := modtime.Add(time.Duration(AppConfiguration.ReadRoot().StorageDaemon.StorageLimitMinutes) * time.Minute)
+	storageExpiresAt := modtime.Add(time.Duration(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().StorageDaemon.StorageLimitMinutes) * time.Minute)
 	storageExpired := time.Now().After(storageExpiresAt)
 
 	if storageExpired {
@@ -70,7 +71,8 @@ func processFile(path string) {
 }
 
 func log(message string) {
-	if AppConfiguration.ReadRoot().StorageDaemon.EnableLogging {
+	shouldLog := AppConfiguration.JsonConfigurationProvider{}.ReadRoot().StorageDaemon.EnableLogging
+	if shouldLog {
 		fmt.Println("Storage Daemon: ", message)
 	}
 }

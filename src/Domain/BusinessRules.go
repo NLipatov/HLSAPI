@@ -2,11 +2,16 @@ package Domain
 
 import (
 	"errors"
-	"hlsapi/src/Domain/AppConfiguration"
+	"fmt"
+	ConfigurationModels "hlsapi/src/Domain/AppConfiguration/Models"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+type ConfigurationProvider interface {
+	ReadRoot() ConfigurationModels.ConfigurationRoot
+}
 
 var allowedExtensions = map[string]bool{
 	".m3u8": true,
@@ -19,27 +24,38 @@ func CanFileBeStored(filename string) bool {
 	return allowedExtensions[ext]
 }
 
-func SplitIntoFolderAndFilename(originalFilename string) (string, string) {
+func GetStorageFolderAndFilename(originalFilename string, provider ConfigurationProvider) (string, string) {
 	pathSequence := strings.Split(originalFilename, "_")
 	folder := pathSequence[0]
 	filename := pathSequence[1]
 
-	createFolderIfNotExists(AppConfiguration.ReadRoot().Storage.StorageFolderPath)
-	createFolderIfNotExists(filepath.Join(AppConfiguration.ReadRoot().Storage.StorageFolderPath, folder))
+	CreateFolder(filepath.Join(provider.ReadRoot().Storage.StorageFolderPath, folder))
 
 	return folder, filename
 }
 
-func createFolderIfNotExists(path string) {
-	_, err := os.Stat(path)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			folderCreationError := os.Mkdir(path, 0700)
-			if folderCreationError != nil {
-				panic(folderCreationError)
+func CreateFolder(path string) {
+	aggregatedSegmentPath := ""
+	for _, segment := range strings.Split(path, string(os.PathSeparator)) {
+		if len(segment) == 0 {
+			panic(fmt.Sprintf("Invalid path: %s\n", path))
+		}
+
+		if len(aggregatedSegmentPath) != 0 {
+			aggregatedSegmentPath += string(os.PathSeparator)
+		}
+		aggregatedSegmentPath += segment
+
+		_, err := os.Stat(aggregatedSegmentPath)
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				folderCreationError := os.Mkdir(aggregatedSegmentPath, 0700)
+				if folderCreationError != nil {
+					panic(folderCreationError)
+				}
+			} else {
+				panic(err)
 			}
-		} else {
-			panic(err)
 		}
 	}
 }
