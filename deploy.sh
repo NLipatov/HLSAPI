@@ -1,6 +1,7 @@
 #!/bin/bash
 
 BRANCH="dev"
+SERVICE="hlsapi"
 
 echo -e "\nSTEP 1: checking out to target branch and pulling the latest changes."
 
@@ -31,7 +32,7 @@ if ! git pull; then
 fi
 
 echo -e "\nSTEP 3: Stop and remove any existing container with the same image."
-EXISTING_CONTAINER=$(docker ps -q -f ancestor=hlsapi)
+EXISTING_CONTAINER=$(docker ps -q -f ancestor=$SERVICE)
 if [ "$EXISTING_CONTAINER" ]; then
     if ! docker stop "$EXISTING_CONTAINER"; then
       echo "ERROR: Failed to stop existing container, that shares the same image - '$EXISTING_CONTAINER'."
@@ -43,7 +44,7 @@ if [ "$EXISTING_CONTAINER" ]; then
     fi
 fi
 
-EXISTING_IMAGE=$(docker images -q hlsapi)
+EXISTING_IMAGE=$(docker images -q $SERVICE)
 if [ "$EXISTING_IMAGE" ]; then
     if ! docker rmi "$EXISTING_IMAGE"; then
       echo "ERROR: Failed to remove an old image - '$EXISTING_IMAGE'."
@@ -51,14 +52,14 @@ if [ "$EXISTING_IMAGE" ]; then
     fi
 fi
 
-echo -e "\nSTEP 6: Build the Docker image 'wasm-chat'."
-if ! docker build -t hlsapi .; then
+echo -e "\nSTEP 6: Build the Docker image '$SERVICE'."
+if ! docker build -t $SERVICE .; then
   echo "ERROR: Failed to build the Docker image."
   exit 1
 fi
 
 echo -e "\nSTEP 7: Run the Docker container with the new image and restart on failure."
-if ! docker run -d --restart=always --network etha-chat --name hlsapi -p 9001:9001 hlsapi; then
+if ! docker run -d --restart=always --network etha-chat --name $SERVICE -p 9001:9001 $SERVICE; then
   echo "ERROR: Failed to Run the Docker container."
   exit 1
 fi
