@@ -17,6 +17,7 @@ func main() {
 
 	http.HandleFunc("/store", httpHandlers.StoreFileOnDisk)
 	http.HandleFunc("/get", httpHandlers.GetFileFromDisk)
+	http.HandleFunc("/health", httpHandlers.RespondToAHealthCheck)
 
 	err := http.ListenAndServe(PORT, nil)
 	if err != nil {
