@@ -65,4 +65,8 @@ func GetFileFromDisk(w http.ResponseWriter, r *http.Request) {
 
 func RespondToAHealthCheck(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
+	_, err := w.Write([]byte("Ready"))
+	if err != nil {
+		panic(err)
+	}
 }
