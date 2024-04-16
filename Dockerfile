@@ -4,6 +4,9 @@ FROM golang:latest
 # Set destination for COPY
 WORKDIR /app
 
+# Install FFMPEG
+RUN apt update && apt install ffmpeg -y
+
 # Copy files
 COPY . ./
 
