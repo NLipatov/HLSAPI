@@ -53,7 +53,7 @@ func TestGetStorageFolderAndFilename_validFolderAndValidFilename(t *testing.T) {
 	AppConfiguration.JsonConfigurationProvider{}.Initialize(TestEnvironmentSetup.CreateConfigurationInTestFolder(t.TempDir(), "appsettings.json"))
 	originalFilename := "folder_filename.ts"
 	expectedFolder, expectedFilename := "folder", "filename.ts"
-	actualFolder, actualFilename := Domain.GetStorageFolderAndFilename(originalFilename)
+	actualFolder, actualFilename := Domain.GetSequenceStorageFolderAndFilename(originalFilename)
 
 	if actualFolder != expectedFolder || actualFilename != expectedFilename {
 		t.Errorf("Expected: %v and %v, got: %v and %v", expectedFolder, expectedFilename, actualFolder, actualFilename)
@@ -64,7 +64,7 @@ func TestGetStorageFolderAndFilename_folderIsActuallyCreated(t *testing.T) {
 	AppConfiguration.JsonConfigurationProvider{}.Initialize(TestEnvironmentSetup.CreateConfigurationInTestFolder(t.TempDir(), "appsettings.json"))
 	originalFilename := "folder_filename.ts"
 	expectedFolder, expectedFilename := "folder", "filename.ts"
-	actualFolder, actualFilename := Domain.GetStorageFolderAndFilename(originalFilename)
+	actualFolder, actualFilename := Domain.GetSequenceStorageFolderAndFilename(originalFilename)
 
 	resultingFolderPath := strings.Join([]string{AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, expectedFolder}, string(os.PathSeparator))
 	_, err := os.Stat(resultingFolderPath)

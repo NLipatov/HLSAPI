@@ -3,6 +3,7 @@ package Domain
 import (
 	"errors"
 	"fmt"
+	"github.com/u2takey/go-utils/uuid"
 	"hlsapi/src/Domain/AppConfiguration"
 	ConfigurationModels "hlsapi/src/Domain/AppConfiguration/Models"
 	"os"
@@ -20,12 +21,33 @@ var allowedExtensions = map[string]bool{
 	".m4a":  true,
 }
 
+var allowedExtensionsForM3U8Conversion = map[string]bool{
+	".mp4":   true,
+	".mts":   true,
+	".avchd": true,
+	".3GP":   true,
+	".mpg":   true,
+	".flv":   true,
+	".mkv":   true,
+	".wmv":   true,
+	".mov":   true,
+	".avi":   true,
+	".webm":  true,
+	".h264":  true,
+	".hevc":  true,
+}
+
+func CanFileBeConvertedToM3U8(filename string) bool {
+	ext := filepath.Ext(filename)
+	return allowedExtensionsForM3U8Conversion[ext]
+}
+
 func CanFileBeStored(filename string) bool {
 	ext := filepath.Ext(filename)
 	return allowedExtensions[ext]
 }
 
-func GetStorageFolderAndFilename(originalFilename string) (string, string) {
+func GetSequenceStorageFolderAndFilename(originalFilename string) (string, string) {
 	pathSequence := strings.Split(originalFilename, "_")
 	folder := pathSequence[0]
 	filename := pathSequence[1]
@@ -33,6 +55,14 @@ func GetStorageFolderAndFilename(originalFilename string) (string, string) {
 	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder))
 
 	return folder, filename
+}
+
+func PrepareFolder() string {
+	folder := uuid.NewUUID()
+
+	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder))
+
+	return folder
 }
 
 func CreateFolder(path string) {
