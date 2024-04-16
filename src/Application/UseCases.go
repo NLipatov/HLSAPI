@@ -12,11 +12,11 @@ import (
 )
 
 func StoreFileOnDisk(filename string, readFrom io.Reader, boundary Boundaries.StoreBoundary) error {
-	if !Domain.CanFileBeStored(filename) {
+	if !Domain.CanFileBeConvertedToM3U8(filename) {
 		return ApplicationLayerErrors.FileCantBeStored{}
 	}
 
-	folder, filename := Domain.GetStorageFolderAndFilename(filename)
+	folder, filename := Domain.GetSequenceStorageFolderAndFilename(filename)
 	path := filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder, filename)
 	writeTo, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
@@ -34,7 +34,7 @@ func StoreFileOnDisk(filename string, readFrom io.Reader, boundary Boundaries.St
 }
 
 func GetFileFromDisk(writeTo io.Writer, requestedFileCode string, boundary Boundaries.GetBoundary) error {
-	folder, filename := Domain.GetStorageFolderAndFilename(requestedFileCode)
+	folder, filename := Domain.GetSequenceStorageFolderAndFilename(requestedFileCode)
 	path := filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder, filename)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		return err
@@ -46,4 +46,34 @@ func GetFileFromDisk(writeTo io.Writer, requestedFileCode string, boundary Bound
 	}
 
 	return nil
+}
+
+func ConvertToM3U8(filename string, readFrom io.Reader, boundary Boundaries.MediaConverterBoundary) (string, error) {
+	if !Domain.CanFileBeConvertedToM3U8(filename) {
+		return "", ApplicationLayerErrors.FileCantBeConvertedToM3U8{}
+	}
+
+	folderId := Domain.PrepareFolder()
+	outputFolderPath := filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folderId)
+
+	inputFilePath := filepath.Join(outputFolderPath, filename)
+	outputFilePath := filepath.Join(outputFolderPath, "0.m3u8")
+
+	writeTo, err := os.Create(inputFilePath)
+	if err != nil {
+		panic(err)
+	}
+	defer writeTo.Close()
+
+	_, err = io.Copy(writeTo, readFrom)
+	if err != nil {
+		panic(err)
+	}
+
+	err = boundary.ConvertToM3U8(inputFilePath, outputFilePath)
+	if err != nil {
+		panic(err)
+	}
+
+	return folderId, nil
 }

@@ -7,45 +7,7 @@ import (
 	"net/http"
 )
 
-func StoreFileOnDisk(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-
-	err := r.ParseMultipartForm(300 * 1024 * 1024) // 300 MB max size
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	uploadedFiles := r.MultipartForm.File["payload"]
-	if len(uploadedFiles) == 0 {
-		http.Error(w, "Send files in a form-data with a 'payload' key", http.StatusBadRequest)
-		return
-	}
-
-	for _, formFile := range uploadedFiles {
-		func() {
-			f, openFileErr := formFile.Open()
-			if openFileErr != nil {
-				http.Error(w, "Error retrieving formFile from form data", http.StatusBadRequest)
-				return
-			}
-
-			defer f.Close()
-
-			err = Application.StoreFileOnDisk(formFile.Filename, f, Infrastructure.DiskInteractor{})
-			if err != nil {
-				http.Error(w, err.Error(), 400)
-				return
-			}
-		}()
-	}
-
-	w.WriteHeader(http.StatusCreated)
-}
-
-func GetFileFromDisk(w http.ResponseWriter, r *http.Request) {
+func Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Serving: %s\n", r.URL.Query().Get("filename"))
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -66,6 +28,45 @@ func GetFileFromDisk(w http.ResponseWriter, r *http.Request) {
 func RespondToAHealthCheck(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte("Ready"))
+	if err != nil {
+		panic(err)
+	}
+}
+
+func CreateM3U8(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+
+	err := r.ParseMultipartForm(300 * 1024 * 1024) // 300 MB max size
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	uploadedFiles := r.MultipartForm.File["payload"]
+	if len(uploadedFiles) != 1 {
+		http.Error(w, "Send 1 file in a form-data with a 'payload' hexKey", http.StatusBadRequest)
+		return
+	}
+
+	formFile := uploadedFiles[0]
+	f, openFileErr := formFile.Open()
+	if openFileErr != nil {
+		http.Error(w, "Error retrieving formFile from form data", http.StatusBadRequest)
+		return
+	}
+
+	defer f.Close()
+
+	folderId, err := Application.ConvertToM3U8(formFile.Filename, f, Infrastructure.FfmpegConverter{})
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		panic(err)
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	_, err = w.Write([]byte(folderId))
 	if err != nil {
 		panic(err)
 	}

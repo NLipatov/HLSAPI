@@ -15,8 +15,8 @@ func main() {
 
 	PORT := fmt.Sprintf(":%d", AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Server.Port)
 
-	http.HandleFunc("/store", httpHandlers.StoreFileOnDisk)
-	http.HandleFunc("/get", httpHandlers.GetFileFromDisk)
+	http.HandleFunc("/toM3U8", httpHandlers.CreateM3U8)
+	http.HandleFunc("/get", httpHandlers.Get)
 	http.HandleFunc("/health", httpHandlers.RespondToAHealthCheck)
 
 	err := http.ListenAndServe(PORT, nil)
