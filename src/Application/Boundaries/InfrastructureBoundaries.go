@@ -9,3 +9,7 @@ type StoreBoundary interface {
 type GetBoundary interface {
 	Get(writeTo io.Writer, path string) error
 }
+
+type MediaConverterBoundary interface {
+	ConvertToM3U8(inputFilename string, outputFilename string) error
+}
