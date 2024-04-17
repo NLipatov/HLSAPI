@@ -1,9 +1,10 @@
 package ConfigurationModels
 
 type ConfigurationRoot struct {
-	Server        ServerConfiguration        `json:"Server"`
-	Storage       StorageConfiguration       `json:"Storage"`
-	StorageDaemon StorageDaemonConfiguration `json:"StorageDaemon"`
+	Server                           ServerConfiguration              `json:"Server"`
+	Storage                          StorageConfiguration             `json:"Storage"`
+	StorageDaemon                    StorageDaemonConfiguration       `json:"StorageDaemon"`
+	InfrastructureLayerConfiguration InfrastructureLayerConfiguration `json:"InfrastructureLayerConfiguration"`
 }
 
 type ServerConfiguration struct {
@@ -20,4 +21,12 @@ type StorageDaemonConfiguration struct {
 type StorageConfiguration struct {
 	MaxFileSizeMb     int    `json:"MaxFileSizeMb"`
 	StorageFolderPath string `json:"StorageFolderPath"`
+}
+
+type InfrastructureLayerConfiguration struct {
+	FFMPEGConverter FFMPEGConverter `json:"FFMPEGConverter"`
+}
+
+type FFMPEGConverter struct {
+	UseLogging bool `json:"UseLogging"`
 }

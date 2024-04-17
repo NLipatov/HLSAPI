@@ -1,6 +1,7 @@
 package Infrastructure
 
 import (
+	"hlsapi/src/Domain/AppConfiguration"
 	"os"
 	"os/exec"
 )
@@ -17,7 +18,9 @@ func (f FfmpegConverter) ConvertToM3U8(inputFilename string, outputFilename stri
 		outputFilename,
 	)
 
-	cmd.Stderr = os.Stderr
+	if isLoggingEnabled() {
+		cmd.Stderr = os.Stderr
+	}
 
 	err := cmd.Run()
 	if err != nil {
@@ -25,4 +28,8 @@ func (f FfmpegConverter) ConvertToM3U8(inputFilename string, outputFilename stri
 	}
 
 	return nil
+}
+
+func isLoggingEnabled() bool {
+	return AppConfiguration.JsonConfigurationProvider{}.ReadRoot().InfrastructureLayerConfiguration.FFMPEGConverter.UseLogging
 }
