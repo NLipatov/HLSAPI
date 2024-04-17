@@ -57,7 +57,7 @@ func ConvertToM3U8(filename string, readFrom io.Reader, boundary Boundaries.Medi
 	outputFolderPath := filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folderId)
 
 	inputFilePath := filepath.Join(outputFolderPath, filename)
-	outputFilePath := filepath.Join(outputFolderPath, "0.m3u8")
+	outputFilePath := filepath.Join(outputFolderPath, "$.m3u8")
 
 	writeTo, err := os.Create(inputFilePath)
 	if err != nil {
@@ -75,5 +75,10 @@ func ConvertToM3U8(filename string, readFrom io.Reader, boundary Boundaries.Medi
 		panic(err)
 	}
 
-	return folderId, nil
+	m3u8Data, err := os.ReadFile(outputFilePath)
+	if err != nil {
+		return "", err
+	}
+
+	return string(m3u8Data), nil
 }
