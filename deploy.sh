@@ -52,19 +52,25 @@ if [ "$EXISTING_IMAGE" ]; then
     fi
 fi
 
-echo -e "\nSTEP 6: Build the Docker image '$SERVICE'."
+echo -e "\nSTEP 6: Copy the configuration file"
+if ! cp /root/EthaChat/Configuration/HLSAPI/appSettings.json appSettings.json; then
+  echo "ERROR: Failed to copy appsettings.json."
+  exit 1
+fi
+
+echo -e "\nSTEP 7: Build the Docker image '$SERVICE'."
 if ! docker build -t $SERVICE .; then
   echo "ERROR: Failed to build the Docker image."
   exit 1
 fi
 
-echo -e "\nSTEP 7: Run the Docker container with the new image and restart on failure."
+echo -e "\nSTEP 8: Run the Docker container with the new image and restart on failure."
 if ! docker run -d --restart=always --network etha-chat --name $SERVICE -p 9001:9001 $SERVICE; then
   echo "ERROR: Failed to Run the Docker container."
   exit 1
 fi
 
-echo -e "\nSTEP 8: Making a deploy.sh executable."
+echo -e "\nSTEP 9: Making a deploy.sh executable."
 if ! chmod +x deploy.sh; then
     echo "ERROR: Failed to make deploy.sh executable."
     exit 1
