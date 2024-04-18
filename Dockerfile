@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:1
 FROM golang:latest
 
+# Set the app root folder
+ENV APP_ROOT=/app
+
 # Set destination for COPY
 WORKDIR /app
 

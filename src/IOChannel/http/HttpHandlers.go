@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hlsapi/src/Application"
 	"hlsapi/src/Infrastructure"
+	"hlsapi/src/Infrastructure/FFmpeg"
 	"net/http"
 )
 
@@ -59,14 +60,14 @@ func CreateM3U8(w http.ResponseWriter, r *http.Request) {
 
 	defer f.Close()
 
-	folderId, err := Application.ConvertToM3U8(formFile.Filename, f, Infrastructure.FfmpegConverter{})
+	playlist, err := Application.ConvertVideoToM3U8Playlist(formFile.Filename, f, FFmpeg.Converter{}, Infrastructure.EnvironmentManager{})
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		panic(err)
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	_, err = w.Write([]byte(folderId))
+	_, err = w.Write([]byte(playlist))
 	if err != nil {
 		panic(err)
 	}

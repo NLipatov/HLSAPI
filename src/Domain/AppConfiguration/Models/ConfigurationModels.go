@@ -8,7 +8,8 @@ type ConfigurationRoot struct {
 }
 
 type ServerConfiguration struct {
-	Port int `json:"Port"`
+	Port                   int    `json:"Port"`
+	GetFileEndpointPostfix string `json:"GetFileEndpointPostfix"`
 }
 
 type StorageDaemonConfiguration struct {
@@ -28,5 +29,6 @@ type InfrastructureLayerConfiguration struct {
 }
 
 type FFMPEGConverter struct {
-	UseLogging bool `json:"UseLogging"`
+	UseLogging       bool   `json:"UseLogging"`
+	ContainerAppRoot string `json:"ContainerAppRoot"`
 }

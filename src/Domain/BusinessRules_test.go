@@ -1,7 +1,6 @@
-package tests
+package Domain
 
 import (
-	"hlsapi/src/Domain"
 	"hlsapi/src/Domain/AppConfiguration"
 	"hlsapi/tests/TestEnvironmentSetup"
 	"os"
@@ -12,7 +11,7 @@ import (
 func TestCanFileBeStored_mp3(t *testing.T) {
 	filename := "sample.mp3"
 	expected := false
-	actual := Domain.CanFileBeStored(filename)
+	actual := CanFileBeStored(filename)
 
 	if actual != expected {
 		t.Errorf("Expected: %v, got: %v", expected, actual)
@@ -22,7 +21,7 @@ func TestCanFileBeStored_mp3(t *testing.T) {
 func TestCanFileBeStored_ts(t *testing.T) {
 	filename := "sample.ts"
 	expected := true
-	actual := Domain.CanFileBeStored(filename)
+	actual := CanFileBeStored(filename)
 
 	if actual != expected {
 		t.Errorf("Expected: %v, got: %v", expected, actual)
@@ -32,7 +31,7 @@ func TestCanFileBeStored_ts(t *testing.T) {
 func TestCanFileBeStored_m3u8(t *testing.T) {
 	filename := "sample.m3u8"
 	expected := true
-	actual := Domain.CanFileBeStored(filename)
+	actual := CanFileBeStored(filename)
 
 	if actual != expected {
 		t.Errorf("Expected: %v, got: %v", expected, actual)
@@ -42,7 +41,7 @@ func TestCanFileBeStored_m3u8(t *testing.T) {
 func TestCanFileBeStored_m4a(t *testing.T) {
 	filename := "sample.m4a"
 	expected := true
-	actual := Domain.CanFileBeStored(filename)
+	actual := CanFileBeStored(filename)
 
 	if actual != expected {
 		t.Errorf("Expected: %v, got: %v", expected, actual)
@@ -50,10 +49,10 @@ func TestCanFileBeStored_m4a(t *testing.T) {
 }
 
 func TestGetStorageFolderAndFilename_validFolderAndValidFilename(t *testing.T) {
-	AppConfiguration.JsonConfigurationProvider{}.Initialize(TestEnvironmentSetup.CreateConfigurationInTestFolder(t.TempDir(), "appsettings.json"))
+	TestEnvironmentSetup.SetupTestConfiguration(t.TempDir())
 	originalFilename := "folder_filename.ts"
 	expectedFolder, expectedFilename := "folder", "filename.ts"
-	actualFolder, actualFilename := Domain.GetSequenceStorageFolderAndFilename(originalFilename)
+	actualFolder, actualFilename := GetSequenceStorageFolderAndFilename(originalFilename)
 
 	if actualFolder != expectedFolder || actualFilename != expectedFilename {
 		t.Errorf("Expected: %v and %v, got: %v and %v", expectedFolder, expectedFilename, actualFolder, actualFilename)
@@ -61,10 +60,10 @@ func TestGetStorageFolderAndFilename_validFolderAndValidFilename(t *testing.T) {
 }
 
 func TestGetStorageFolderAndFilename_folderIsActuallyCreated(t *testing.T) {
-	AppConfiguration.JsonConfigurationProvider{}.Initialize(TestEnvironmentSetup.CreateConfigurationInTestFolder(t.TempDir(), "appsettings.json"))
+	TestEnvironmentSetup.SetupTestConfiguration(t.TempDir())
 	originalFilename := "folder_filename.ts"
 	expectedFolder, expectedFilename := "folder", "filename.ts"
-	actualFolder, actualFilename := Domain.GetSequenceStorageFolderAndFilename(originalFilename)
+	actualFolder, actualFilename := GetSequenceStorageFolderAndFilename(originalFilename)
 
 	resultingFolderPath := strings.Join([]string{AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, expectedFolder}, string(os.PathSeparator))
 	_, err := os.Stat(resultingFolderPath)

@@ -11,5 +11,9 @@ type GetBoundary interface {
 }
 
 type MediaConverterBoundary interface {
-	ConvertToM3U8(inputFilename string, outputFilename string) error
+	ConvertToM3U8(workdirAbsolutePath string, inputVideoFilename string) (string, error)
+}
+
+type EnvironmentBoundary interface {
+	GetAppRootPath() string
 }

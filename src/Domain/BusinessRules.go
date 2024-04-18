@@ -57,7 +57,7 @@ func GetSequenceStorageFolderAndFilename(originalFilename string) (string, strin
 	return folder, filename
 }
 
-func PrepareFolder() string {
+func CreateWorkdir() string {
 	folder := uuid.NewUUID()
 
 	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder))
