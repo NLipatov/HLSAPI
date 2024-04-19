@@ -1,6 +1,6 @@
-package ConfigurationModels
+package Entities
 
-type ConfigurationRoot struct {
+type AppConfiguration struct {
 	Server                           ServerConfiguration              `json:"Server"`
 	Storage                          StorageConfiguration             `json:"Storage"`
 	StorageDaemon                    StorageDaemonConfiguration       `json:"StorageDaemon"`

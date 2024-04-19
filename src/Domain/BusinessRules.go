@@ -4,15 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"github.com/u2takey/go-utils/uuid"
+	"hlsapi/src/Application/Boundaries"
+	ConfigurationModels "hlsapi/src/Application/Entities"
 	"hlsapi/src/Domain/AppConfiguration"
-	ConfigurationModels "hlsapi/src/Domain/AppConfiguration/Models"
+	"hlsapi/src/Domain/CleanupType"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
 
 type ConfigurationProvider interface {
-	ReadRoot() ConfigurationModels.ConfigurationRoot
+	GetConfiguration() ConfigurationModels.AppConfiguration
 }
 
 var allowedExtensions = map[string]bool{
@@ -52,7 +55,7 @@ func GetSequenceStorageFolderAndFilename(originalFilename string) (string, strin
 	folder := pathSequence[0]
 	filename := pathSequence[1]
 
-	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder))
+	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Storage.StorageFolderPath, folder))
 
 	return folder, filename
 }
@@ -60,7 +63,7 @@ func GetSequenceStorageFolderAndFilename(originalFilename string) (string, strin
 func CreateWorkdir() string {
 	folder := uuid.NewUUID()
 
-	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Storage.StorageFolderPath, folder))
+	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Storage.StorageFolderPath, folder))
 
 	return folder
 }
@@ -89,4 +92,34 @@ func CreateFolder(path string) {
 			}
 		}
 	}
+}
+
+func ShouldFileBeCleanedUp(filepath string, mode CleanupType.CleanupMode, environmentManager Boundaries.EnvironmentBoundary, configurationManager Boundaries.ConfigurationBoundary) bool {
+	baseWorkdir := path.Join(environmentManager.GetAppRootPath(), configurationManager.GetConfiguration().Storage.StorageFolderPath)
+
+	//File is not in storage folder
+	if !strings.HasPrefix(filepath, baseWorkdir) {
+		return false
+	}
+
+	//File does not exist
+	_, err := os.Stat(filepath)
+	if err != nil {
+		return false
+	}
+
+	switch mode {
+	case CleanupType.UNSET:
+		return false
+	case CleanupType.REMOVE_ALL_FILES:
+		return true
+	case CleanupType.REMOVE_KEY_FILES:
+		if strings.HasSuffix(filepath, ".key") || strings.HasSuffix(filepath, ".keyinfo") {
+			return true
+		}
+	default:
+		panic("Invalid cleanup mode")
+	}
+
+	return false
 }

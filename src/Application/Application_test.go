@@ -64,7 +64,7 @@ func TestStoreFileOnDisk(t *testing.T) {
 
 func TestFormatPlaylist(t *testing.T) {
 	tempDir := t.TempDir()
-	TestEnvironmentSetup.SetupTestConfiguration(tempDir)
+	TestEnvironmentSetup.SetupTestDirConfiguration(tempDir)
 
 	playlist :=
 		`#EXTM3U
@@ -119,7 +119,7 @@ http://localhost:9001/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out5.ts
 }
 
 func writeTestFile(tempDirPath string, content []byte) string {
-	TestEnvironmentSetup.SetupTestConfiguration(tempDirPath)
+	TestEnvironmentSetup.SetupTestDirConfiguration(tempDirPath)
 	testFolder := "test"
 	testFilename := "sample.mp4"
 	testReader := bytes.NewReader(content)

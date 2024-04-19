@@ -3,6 +3,7 @@ package httpHandlers
 import (
 	"fmt"
 	"hlsapi/src/Application"
+	"hlsapi/src/Domain/CleanupType"
 	"hlsapi/src/Infrastructure"
 	"hlsapi/src/Infrastructure/FFmpeg"
 	"net/http"
@@ -71,4 +72,30 @@ func CreateM3U8(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func Cleanup(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+
+	folderId := r.URL.Query().Get("id")
+	cleanupModeQueryParameter := r.URL.Query().Get("mode")
+	mode := CleanupType.UNSET
+	if cleanupModeQueryParameter == "1" {
+		mode = 1
+	}
+
+	if cleanupModeQueryParameter == "2" {
+		mode = 2
+	}
+
+	err := Application.CleanUpStorageFolder(folderId, mode, Infrastructure.EnvironmentManager{})
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	_, _ = w.Write([]byte(folderId))
+	w.WriteHeader(200)
 }

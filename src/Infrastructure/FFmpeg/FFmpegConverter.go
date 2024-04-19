@@ -37,7 +37,7 @@ func (f Converter) ConvertToM3U8(workdirAbsPath string, inputVideoFilename strin
 }
 
 func isLoggingEnabled() bool {
-	return AppConfiguration.JsonConfigurationProvider{}.ReadRoot().InfrastructureLayerConfiguration.FFMPEGConverter.UseLogging
+	return AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().InfrastructureLayerConfiguration.FFMPEGConverter.UseLogging
 }
 
 func tryRemovePostProcessFiles(paths ...string) {

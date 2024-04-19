@@ -2,19 +2,19 @@ package TestEnvironmentSetup
 
 import (
 	"encoding/json"
+	ConfigurationModels "hlsapi/src/Application/Entities"
 	"hlsapi/src/Domain/AppConfiguration"
-	ConfigurationModels "hlsapi/src/Domain/AppConfiguration/Models"
 	"os"
 	"path"
 )
 
-func SetupTestConfiguration(testTemporaryDirectory string) {
+func SetupTestDirConfiguration(testTemporaryDirectory string) {
 	configurationPath := createConfigurationInTestFolder(testTemporaryDirectory, "testSettings.json")
 	AppConfiguration.JsonConfigurationProvider{}.Initialize(configurationPath)
 }
 
 func createConfigurationInTestFolder(tempFolderPath string, configurationFilename string) string {
-	configurationRoot := ConfigurationModels.ConfigurationRoot{
+	configurationRoot := ConfigurationModels.AppConfiguration{
 		Server: ConfigurationModels.ServerConfiguration{
 			Port:                   9001,
 			GetFileEndpointPostfix: "get?filename=",

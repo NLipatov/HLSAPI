@@ -13,9 +13,10 @@ func main() {
 
 	go Subdomain.Start()
 
-	PORT := fmt.Sprintf(":%d", AppConfiguration.JsonConfigurationProvider{}.ReadRoot().Server.Port)
+	PORT := fmt.Sprintf(":%d", AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Server.Port)
 
 	http.HandleFunc("/toM3U8", httpHandlers.CreateM3U8)
+	http.HandleFunc("/cleanup", httpHandlers.Cleanup)
 	http.HandleFunc("/get", httpHandlers.Get)
 	http.HandleFunc("/health", httpHandlers.RespondToAHealthCheck)
 
