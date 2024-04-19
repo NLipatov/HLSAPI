@@ -29,7 +29,7 @@ func (f Converter) ConvertToM3U8(workdirAbsPath string, inputVideoFilename strin
 		panic(err)
 	}
 
-	tryRemovePostProcessFiles(path.Join(workdirAbsPath, inputVideoFilename), path.Join(workdirAbsPath, "hls.sh"))
+	tryRemovePostProcessFiles(path.Join(workdirAbsPath, inputVideoFilename), path.Join(workdirAbsPath, path.Base(scriptPath)))
 
 	playlistPath := path.Join(workdirAbsPath, "out.m3u8")
 
