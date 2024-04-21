@@ -28,7 +28,7 @@ var allowedExtensionsForM3U8Conversion = map[string]bool{
 	".mp4":   true,
 	".mts":   true,
 	".avchd": true,
-	".3GP":   true,
+	".3gp":   true,
 	".mpg":   true,
 	".flv":   true,
 	".mkv":   true,
