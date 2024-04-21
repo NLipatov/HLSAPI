@@ -17,6 +17,7 @@ func createConfigurationInTestFolder(tempFolderPath string, configurationFilenam
 	configurationRoot := ConfigurationModels.AppConfiguration{
 		Server: ConfigurationModels.ServerConfiguration{
 			Port:                   9001,
+			HostUrl:                "https://example.com",
 			GetFileEndpointPostfix: "get?filename=",
 		},
 		Storage: ConfigurationModels.StorageConfiguration{

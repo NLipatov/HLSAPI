@@ -98,19 +98,19 @@ out5.ts
 #EXT-X-TARGETDURATION:14
 #EXT-X-MEDIA-SEQUENCE:0
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-KEY:METHOD=AES-128,URI="http://localhost:9001/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_file.key",IV=0xfd0c8974ce8f67645add2064c3fd3104
+#EXT-X-KEY:METHOD=AES-128,URI="https://example.com/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_file.key",IV=0xfd0c8974ce8f67645add2064c3fd3104
 #EXTINF:10.463000,
-http://localhost:9001/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out0.ts
+https://example.com/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out0.ts
 #EXTINF:12.625000,
-http://localhost:9001/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out1.ts
+https://example.com/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out1.ts
 #EXTINF:8.958000,
-http://localhost:9001/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out2.ts
+https://example.com/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out2.ts
 #EXTINF:10.417000,
-http://localhost:9001/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out3.ts
+https://example.com/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out3.ts
 #EXTINF:13.666000,
-http://localhost:9001/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out4.ts
+https://example.com/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out4.ts
 #EXTINF:3.854000,
-http://localhost:9001/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out5.ts
+https://example.com/get?filename=4c1cb6c6-b00c-4c07-8954-3332cc668c83_out5.ts
 #EXT-X-ENDLIST`
 
 	if strings.TrimSpace(expectedPlaylist) != strings.TrimSpace(formattedPlaylist) {
