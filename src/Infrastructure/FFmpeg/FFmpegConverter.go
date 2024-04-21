@@ -47,7 +47,22 @@ func tryRemovePostProcessFiles(paths ...string) {
 }
 
 func generateSh(AbsoluteFolderPath string, inVideoFilename string) (string, error) {
-	script := "#!/bin/bash\nBASE_URL=${1:-'.'}\nopenssl rand 16 > " + path.Join(AbsoluteFolderPath, "file.key") + "\necho $BASE_URL/file.key > " + path.Join(AbsoluteFolderPath, "file.keyinfo") + "\necho " + path.Join(AbsoluteFolderPath, "file.key") + " >> " + path.Join(AbsoluteFolderPath, "file.keyinfo") + "\necho $(openssl rand -hex 16) >> " + path.Join(AbsoluteFolderPath, "file.keyinfo") + "\nffmpeg -i " + path.Join(AbsoluteFolderPath, inVideoFilename) + " -c:v copy -c:a copy -hls_time 10 -hls_playlist_type vod -hls_playlist_type vod -hls_key_info_file " + path.Join(AbsoluteFolderPath, "file.keyinfo") + " " + path.Join(AbsoluteFolderPath, "out.m3u8")
+	script := "#!/bin/bash" +
+		"\nBASE_URL=${1:-'.'}" +
+		"\nopenssl rand 16 > " + path.Join(AbsoluteFolderPath, "file.key") +
+		"\necho $BASE_URL/file.key > " + path.Join(AbsoluteFolderPath, "file.keyinfo") +
+		"\necho " + path.Join(AbsoluteFolderPath, "file.key") + " >> " + path.Join(AbsoluteFolderPath, "file.keyinfo") +
+		"\necho $(openssl rand -hex 16) >> " + path.Join(AbsoluteFolderPath, "file.keyinfo") +
+		"\nffmpeg -i " + path.Join(AbsoluteFolderPath, inVideoFilename) +
+		" -c:v libx264" +
+		" -c:a aac" +
+		" -b:a 128k" +
+		" -preset veryfast" +
+		" -hls_time 10" +
+		" -hls_playlist_type vod" +
+		" -hls_playlist_type vod" +
+		" -hls_key_info_file " + path.Join(AbsoluteFolderPath, "file.keyinfo") +
+		fmt.Sprintf(" %s", path.Join(AbsoluteFolderPath, "out.m3u8"))
 	scriptPath := path.Join(AbsoluteFolderPath, "hls.sh")
 
 	err := os.WriteFile(scriptPath, []byte(script), 0777)
