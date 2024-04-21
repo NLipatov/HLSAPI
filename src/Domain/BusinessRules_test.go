@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/u2takey/go-utils/uuid"
 	"hlsapi/src/Domain/AppConfiguration"
-	"hlsapi/src/Domain/CleanupType"
+	"hlsapi/src/Domain/WipeModes"
 	"hlsapi/src/Infrastructure"
 	"hlsapi/tests/TestEnvironmentSetup"
 	"os"
@@ -98,12 +98,12 @@ func TestShouldFileBeCleanedUp(t *testing.T) {
 	_ = os.WriteFile(m3u8Path, []byte("some content"), 0777)
 	_ = os.WriteFile(tsPath, []byte("some content"), 0777)
 
-	keyFileResult := ShouldFileBeCleanedUp(keyPath, CleanupType.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
-	keyinfoFileResult := ShouldFileBeCleanedUp(keyinfoPath, CleanupType.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
-	m3u8FileResult := ShouldFileBeCleanedUp(m3u8Path, CleanupType.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
-	tsFileResult := ShouldFileBeCleanedUp(tsPath, CleanupType.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
-	notExistingFilePathResult := ShouldFileBeCleanedUp(notExistingFilePath, CleanupType.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
-	fileFromOtherDirResult := ShouldFileBeCleanedUp(fileFromOtherDir, CleanupType.REMOVE_ALL_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
+	keyFileResult := ShouldFileBeCleanedUp(keyPath, WipeModes.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
+	keyinfoFileResult := ShouldFileBeCleanedUp(keyinfoPath, WipeModes.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
+	m3u8FileResult := ShouldFileBeCleanedUp(m3u8Path, WipeModes.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
+	tsFileResult := ShouldFileBeCleanedUp(tsPath, WipeModes.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
+	notExistingFilePathResult := ShouldFileBeCleanedUp(notExistingFilePath, WipeModes.REMOVE_KEY_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
+	fileFromOtherDirResult := ShouldFileBeCleanedUp(fileFromOtherDir, WipeModes.REMOVE_ALL_FILES, Infrastructure.EnvironmentManager{}, AppConfiguration.JsonConfigurationProvider{})
 
 	if keyFileResult != true {
 		t.Error(".key file should be cleaned up")

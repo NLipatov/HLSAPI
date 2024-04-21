@@ -15,8 +15,8 @@ func main() {
 
 	PORT := fmt.Sprintf(":%d", AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Server.Port)
 
-	http.HandleFunc("/toM3U8", httpHandlers.CreateM3U8)
-	http.HandleFunc("/cleanup", httpHandlers.Cleanup)
+	http.HandleFunc("/convert", httpHandlers.CreateM3U8)
+	http.HandleFunc("/wipe", httpHandlers.Wipe)
 	http.HandleFunc("/get", httpHandlers.Get)
 	http.HandleFunc("/health", httpHandlers.RespondToAHealthCheck)
 

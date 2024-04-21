@@ -3,7 +3,7 @@ package httpHandlers
 import (
 	"fmt"
 	"hlsapi/src/Application"
-	"hlsapi/src/Domain/CleanupType"
+	"hlsapi/src/Domain/WipeModes"
 	"hlsapi/src/Infrastructure"
 	"hlsapi/src/Infrastructure/FFmpeg"
 	"net/http"
@@ -74,14 +74,14 @@ func CreateM3U8(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Cleanup(w http.ResponseWriter, r *http.Request) {
+func Wipe(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 
 	folderId := r.URL.Query().Get("id")
 	cleanupModeQueryParameter := r.URL.Query().Get("mode")
-	mode := CleanupType.UNSET
+	mode := WipeModes.UNSET
 	if cleanupModeQueryParameter == "1" {
 		mode = 1
 	}
@@ -90,7 +90,7 @@ func Cleanup(w http.ResponseWriter, r *http.Request) {
 		mode = 2
 	}
 
-	err := Application.CleanUpStorageFolder(folderId, mode, Infrastructure.EnvironmentManager{})
+	err := Application.WipeStorageFolder(folderId, mode, Infrastructure.EnvironmentManager{})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

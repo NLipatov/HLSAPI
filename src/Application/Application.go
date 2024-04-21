@@ -7,7 +7,7 @@ import (
 	"hlsapi/src/Application/Errors"
 	"hlsapi/src/Domain"
 	"hlsapi/src/Domain/AppConfiguration"
-	"hlsapi/src/Domain/CleanupType"
+	"hlsapi/src/Domain/WipeModes"
 	"io"
 	"os"
 	"path"
@@ -121,7 +121,7 @@ func formatPlaylist(playlist string, folderId string) (string, error) {
 	return sb.String(), nil
 }
 
-func CleanUpStorageFolder(folderId string, mode CleanupType.CleanupMode, environmentManager Boundaries.EnvironmentBoundary) error {
+func WipeStorageFolder(folderId string, mode WipeModes.WipeMode, environmentManager Boundaries.EnvironmentBoundary) error {
 	folder := filepath.Join(environmentManager.GetAppRootPath(), AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Storage.StorageFolderPath, folderId)
 
 	files, err := os.ReadDir(folder)

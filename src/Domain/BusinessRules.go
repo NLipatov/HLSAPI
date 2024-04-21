@@ -7,7 +7,7 @@ import (
 	"hlsapi/src/Application/Boundaries"
 	ConfigurationModels "hlsapi/src/Application/Entities"
 	"hlsapi/src/Domain/AppConfiguration"
-	"hlsapi/src/Domain/CleanupType"
+	"hlsapi/src/Domain/WipeModes"
 	"os"
 	"path"
 	"path/filepath"
@@ -94,7 +94,7 @@ func CreateFolder(path string) {
 	}
 }
 
-func ShouldFileBeCleanedUp(filepath string, mode CleanupType.CleanupMode, environmentManager Boundaries.EnvironmentBoundary, configurationManager Boundaries.ConfigurationBoundary) bool {
+func ShouldFileBeCleanedUp(filepath string, mode WipeModes.WipeMode, environmentManager Boundaries.EnvironmentBoundary, configurationManager Boundaries.ConfigurationBoundary) bool {
 	baseWorkdir := path.Join(environmentManager.GetAppRootPath(), configurationManager.GetConfiguration().Storage.StorageFolderPath)
 
 	//File is not in storage folder
@@ -109,11 +109,11 @@ func ShouldFileBeCleanedUp(filepath string, mode CleanupType.CleanupMode, enviro
 	}
 
 	switch mode {
-	case CleanupType.UNSET:
+	case WipeModes.UNSET:
 		return false
-	case CleanupType.REMOVE_ALL_FILES:
+	case WipeModes.REMOVE_ALL_FILES:
 		return true
-	case CleanupType.REMOVE_KEY_FILES:
+	case WipeModes.REMOVE_KEY_FILES:
 		if strings.HasSuffix(filepath, ".key") || strings.HasSuffix(filepath, ".keyinfo") {
 			return true
 		}
