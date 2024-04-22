@@ -2,7 +2,7 @@ package Subdomain
 
 import (
 	"fmt"
-	"github.com/u2takey/go-utils/uuid"
+	"github.com/google/uuid"
 	"hlsapi/tests/TestEnvironmentSetup"
 	"os"
 	"path/filepath"
@@ -14,7 +14,7 @@ func TestProcessDirectoryWithOutdatedFiles(t *testing.T) {
 	tempDir := os.TempDir()
 	TestEnvironmentSetup.SetupTestDirConfiguration(tempDir)
 
-	testDirPath := filepath.Join(tempDir, uuid.NewUUID())
+	testDirPath := filepath.Join(tempDir, uuid.New().String())
 	err := os.Mkdir(testDirPath, 0700)
 	if err != nil {
 		t.Error(err)
@@ -62,7 +62,7 @@ func TestProcessDirectoryWithNotOutdatedFiles(t *testing.T) {
 	tempDir := os.TempDir()
 	TestEnvironmentSetup.SetupTestDirConfiguration(tempDir)
 
-	testDirPath := filepath.Join(tempDir, uuid.NewUUID())
+	testDirPath := filepath.Join(tempDir, uuid.New().String())
 	err := os.Mkdir(testDirPath, 0700)
 	if err != nil {
 		t.Error(err)
