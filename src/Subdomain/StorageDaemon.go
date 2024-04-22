@@ -25,18 +25,9 @@ func Start() {
 
 func processDirectory(path string) {
 	log(fmt.Sprintf("checking %s\n", path))
-	entries, err := os.ReadDir(path)
+	entries, err := getFolderEntries(path)
 	if err != nil {
-		log(fmt.Sprintf("Could not read path: %s\n", path))
-		return
-	}
-
-	if len(entries) == 0 {
-		err = os.Remove(path)
-		if err != nil {
-			panic(err)
-		}
-		return
+		log(err.Error())
 	}
 
 	for _, entry := range entries {
@@ -47,6 +38,24 @@ func processDirectory(path string) {
 		} else {
 			processFile(entryPath)
 		}
+	}
+
+	entries, err = os.ReadDir(path)
+	if err != nil {
+		log(fmt.Sprintf("Could not read path: %s\n", path))
+		return
+	}
+
+	entries, err = getFolderEntries(path)
+	if err != nil {
+		log(err.Error())
+	}
+	if len(entries) == 0 {
+		err = os.Remove(path)
+		if err != nil {
+			panic(err)
+		}
+		return
 	}
 }
 
@@ -61,6 +70,13 @@ func processFile(path string) {
 	storageExpired := time.Now().After(storageExpiresAt)
 
 	if storageExpired {
+		file, err := os.Open(path)
+		if err != nil {
+			log(fmt.Sprintf("Could not open file for removal: %s", err.Error()))
+			return
+		}
+		file.Close() // Закрываем файл
+
 		err = os.Remove(path)
 		if err != nil {
 			log(fmt.Sprintf("Could not delete a file (%s): %s", err.Error(), path))
@@ -75,4 +91,14 @@ func log(message string) {
 	if shouldLog {
 		fmt.Println("Storage Daemon: ", message)
 	}
+}
+
+func getFolderEntries(folderPath string) ([]os.DirEntry, error) {
+	entries, err := os.ReadDir(folderPath)
+	if err != nil {
+		log(fmt.Sprintf("Could not read path: %s\n", folderPath))
+		return nil, err
+	}
+
+	return entries, nil
 }
