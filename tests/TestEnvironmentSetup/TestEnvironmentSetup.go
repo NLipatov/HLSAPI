@@ -2,19 +2,34 @@ package TestEnvironmentSetup
 
 import (
 	"encoding/json"
-	ConfigurationModels "hlsapi/src/Domain/AppConfiguration/Models"
+	ConfigurationModels "hlsapi/src/Application/Entities"
+	"hlsapi/src/Domain/AppConfiguration"
 	"os"
 	"path"
 )
 
-func CreateConfigurationInTestFolder(tempFolderPath string, configurationFilename string) string {
-	configurationRoot := ConfigurationModels.ConfigurationRoot{
-		Server: ConfigurationModels.ServerConfiguration{},
+func SetupTestDirConfiguration(testTemporaryDirectory string) {
+	configurationPath := createConfigurationInTestFolder(testTemporaryDirectory, "testSettings.json")
+	AppConfiguration.JsonConfigurationProvider{}.Initialize(configurationPath)
+}
+
+func createConfigurationInTestFolder(tempFolderPath string, configurationFilename string) string {
+	configurationRoot := ConfigurationModels.AppConfiguration{
+		Server: ConfigurationModels.ServerConfiguration{
+			Port:                   9001,
+			HostUrl:                "https://example.com",
+			GetFileEndpointPostfix: "get?filename=",
+		},
 		Storage: ConfigurationModels.StorageConfiguration{
 			MaxFileSizeMb:     100,
 			StorageFolderPath: tempFolderPath,
 		},
-		StorageDaemon: ConfigurationModels.StorageDaemonConfiguration{},
+		StorageDaemon: ConfigurationModels.StorageDaemonConfiguration{
+			ShouldRun:                    true,
+			EnableLogging:                true,
+			StorageChecksIntervalMinutes: 1,
+			StorageLimitMinutes:          1,
+		},
 	}
 
 	jsonBytes, err := json.MarshalIndent(configurationRoot, "", "\t")
