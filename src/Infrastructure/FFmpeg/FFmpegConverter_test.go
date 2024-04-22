@@ -27,7 +27,14 @@ func TestGenerateSh(t *testing.T) {
 		t.Error("Invalid script: it does not start with #!/bin/bash")
 	}
 
-	if !strings.Contains(script, "-c:v copy -c:a copy -hls_time") {
+	if !strings.Contains(script,
+		" -c:v libx264"+
+			" -c:a aac"+
+			" -b:a 128k"+
+			" -preset veryfast"+
+			" -hls_time 10"+
+			" -hls_playlist_type vod"+
+			" -hls_playlist_type vod") {
 		t.Error("Invalid script")
 	}
 }

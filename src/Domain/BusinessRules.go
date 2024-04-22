@@ -3,7 +3,7 @@ package Domain
 import (
 	"errors"
 	"fmt"
-	"github.com/u2takey/go-utils/uuid"
+	"github.com/google/uuid"
 	"hlsapi/src/Application/Boundaries"
 	ConfigurationModels "hlsapi/src/Application/Entities"
 	"hlsapi/src/Domain/AppConfiguration"
@@ -61,7 +61,7 @@ func GetSequenceStorageFolderAndFilename(originalFilename string) (string, strin
 }
 
 func CreateWorkdir() string {
-	folder := uuid.NewUUID()
+	folder := uuid.New().String()
 
 	CreateFolder(filepath.Join(AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Storage.StorageFolderPath, folder))
 

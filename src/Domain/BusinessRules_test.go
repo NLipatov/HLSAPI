@@ -2,7 +2,7 @@ package Domain
 
 import (
 	"fmt"
-	"github.com/u2takey/go-utils/uuid"
+	"github.com/google/uuid"
 	"hlsapi/src/Domain/AppConfiguration"
 	"hlsapi/src/Domain/WipeModes"
 	"hlsapi/src/Infrastructure"
@@ -90,8 +90,8 @@ func TestShouldFileBeCleanedUp(t *testing.T) {
 	keyinfoPath := path.Join(tempDir, "key.keyinfo")
 	m3u8Path := path.Join(tempDir, "sample.m3u8")
 	tsPath := path.Join(tempDir, "sample.ts")
-	notExistingFilePath := path.Join(tempDir, fmt.Sprintf("%s.%s", uuid.NewUUID(), uuid.NewUUID()))
-	fileFromOtherDir := path.Join("other", fmt.Sprintf("%s.%s", uuid.NewUUID(), uuid.NewUUID()))
+	notExistingFilePath := path.Join(tempDir, fmt.Sprintf("%s.%s", uuid.New().String(), uuid.New().String()))
+	fileFromOtherDir := path.Join("other", fmt.Sprintf("%s.%s", uuid.New().String(), uuid.New().String()))
 
 	_ = os.WriteFile(keyPath, []byte("some content"), 0777)
 	_ = os.WriteFile(keyinfoPath, []byte("some content"), 0777)

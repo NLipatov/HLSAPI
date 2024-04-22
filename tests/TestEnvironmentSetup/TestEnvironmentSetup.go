@@ -24,7 +24,12 @@ func createConfigurationInTestFolder(tempFolderPath string, configurationFilenam
 			MaxFileSizeMb:     100,
 			StorageFolderPath: tempFolderPath,
 		},
-		StorageDaemon: ConfigurationModels.StorageDaemonConfiguration{},
+		StorageDaemon: ConfigurationModels.StorageDaemonConfiguration{
+			ShouldRun:                    true,
+			EnableLogging:                true,
+			StorageChecksIntervalMinutes: 1,
+			StorageLimitMinutes:          1,
+		},
 	}
 
 	jsonBytes, err := json.MarshalIndent(configurationRoot, "", "\t")
