@@ -42,6 +42,7 @@ var allowedExtensionsForM3U8Conversion = map[string]bool{
 
 func CanFileBeConvertedToM3U8(filename string) bool {
 	ext := filepath.Ext(filename)
+	ext = strings.ToLower(ext)
 	return allowedExtensionsForM3U8Conversion[ext]
 }
 
