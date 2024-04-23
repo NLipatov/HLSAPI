@@ -44,7 +44,7 @@ func TestCanFileBeStored_m3u8(t *testing.T) {
 }
 
 func TestCanFileBeStored_m4a(t *testing.T) {
-	filename := "sample.m4a"
+	filename := "sample.MOV"
 	expected := true
 	actual := CanFileBeStored(filename)
 

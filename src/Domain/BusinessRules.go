@@ -19,9 +19,21 @@ type ConfigurationProvider interface {
 }
 
 var allowedExtensions = map[string]bool{
-	".m3u8": true,
-	".ts":   true,
-	".m4a":  true,
+	".m3u8":  true,
+	".ts":    true,
+	".m4a":   true,
+	".mts":   true,
+	".avchd": true,
+	".3gp":   true,
+	".mpg":   true,
+	".flv":   true,
+	".mkv":   true,
+	".wmv":   true,
+	".mov":   true,
+	".avi":   true,
+	".webm":  true,
+	".h264":  true,
+	".hevc":  true,
 }
 
 var allowedExtensionsForM3U8Conversion = map[string]bool{
@@ -48,6 +60,7 @@ func CanFileBeConvertedToM3U8(filename string) bool {
 
 func CanFileBeStored(filename string) bool {
 	ext := filepath.Ext(filename)
+	ext = strings.ToLower(ext)
 	return allowedExtensions[ext]
 }
 
