@@ -31,7 +31,7 @@ func TestGenerateSh(t *testing.T) {
 		" -c:v libx264"+
 			" -c:a aac"+
 			" -b:a 128k"+
-			" -preset veryfast"+
+			" -preset ultrafast"+
 			" -hls_time 10"+
 			" -hls_playlist_type vod"+
 			" -hls_playlist_type vod") {
