@@ -161,7 +161,6 @@ func isDirectVideoCodecCopyPossible(codec string) bool {
 		"h264":       true,
 		"hevc":       true,
 		"mpeg2video": true,
-		"mpeg4":      true,
 		"mjpeg":      true,
 		"dvvideo":    true,
 	}
