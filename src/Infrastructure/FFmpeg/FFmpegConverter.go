@@ -160,6 +160,7 @@ func isDirectVideoCodecCopyPossible(codec string) bool {
 	allowedCodecs := map[string]bool{
 		"h264":       true,
 		"hevc":       true,
+		"mpeg4":      true,
 		"mpeg2video": true,
 		"mjpeg":      true,
 		"dvvideo":    true,
