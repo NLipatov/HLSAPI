@@ -54,18 +54,11 @@ func generateSh(AbsoluteFolderPath string, inVideoFilename string) (string, erro
 		"\necho " + path.Join(AbsoluteFolderPath, "file.key") + " >> " + path.Join(AbsoluteFolderPath, "file.keyinfo") +
 		"\necho $(openssl rand -hex 16) >> " + path.Join(AbsoluteFolderPath, "file.keyinfo") +
 		"\nffmpeg -y -i " + path.Join(AbsoluteFolderPath, inVideoFilename) +
-		" -c:v libx264" +
-		" -preset ultrafast" +
-		" -tune fastdecode" +
-		" -crf 35" +
-		" -vf scale=1280:-1" +
-		" -r 30" + // max framerate 30 fps
-		" -b:v 2M" + //max bitrate 2 Mbps
-		" -c:a aac" +
-		" -b:a 128k" +
-		" -movflags +faststart" +
-		" -hls_time 2" +
+		" -c:v copy" +
+		" -c:a copy" +
+		" -hls_time 10" +
 		" -hls_playlist_type vod" +
+		" -threads 0" +
 		" -hls_key_info_file " + path.Join(AbsoluteFolderPath, "file.keyinfo") +
 		fmt.Sprintf(" %s", path.Join(AbsoluteFolderPath, "out.m3u8"))
 	scriptPath := path.Join(AbsoluteFolderPath, "hls.sh")
