@@ -144,7 +144,21 @@ func getVideoCodec(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.TrimSpace(string(out)), nil
+
+	videoCodecProbeResult := string(out)
+	resultParts := strings.Split(strings.TrimSpace(videoCodecProbeResult), "\n")
+
+	if len(resultParts) > 1 {
+		reference := resultParts[0]
+		for i := 1; i < len(resultParts); i++ {
+			if reference != resultParts[i] {
+				return videoCodecProbeResult, nil
+			}
+		}
+		return reference, nil
+	}
+
+	return strings.TrimSpace(resultParts[0]), nil
 }
 
 func getAudioCodec(filePath string) (string, error) {
