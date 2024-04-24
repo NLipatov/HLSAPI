@@ -28,19 +28,20 @@ func TestGenerateSh(t *testing.T) {
 	}
 
 	if !strings.Contains(script,
-		" -c:v libx264"+
-			" -preset ultrafast"+
-			" -tune fastdecode"+
-			" -crf 35"+
-			" -vf scale=1280:-1"+
-			" -r 30"+
-			" -b:v 2M"+
-			" -c:a aac"+
-			" -b:a 128k"+
-			" -movflags +faststart"+
-			" -hls_time 2"+
+		" -c:v copy"+
+			" -c:a copy"+
+			" -hls_time 10"+
 			" -hls_playlist_type vod"+
-			" -hls_key_info_file ") {
+			" -threads 0") {
 		t.Error("Invalid script")
+	}
+}
+
+func TestChangeExtensionToMp4(t *testing.T) {
+	original := "in.webm"
+	expected := "in.mp4"
+	actial := changeExtensionToMp4(original)
+	if actial != expected {
+		t.Error("Expected", expected, "got", actial)
 	}
 }
