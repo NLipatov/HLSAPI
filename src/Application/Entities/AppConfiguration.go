@@ -9,7 +9,7 @@ type AppConfiguration struct {
 
 type ServerConfiguration struct {
 	Port                   int    `json:"Port"`
-	HostUrl                string `json:"HostUrl"`
+	AppAddress             string `json:"AppAddress"`
 	GetFileEndpointPostfix string `json:"GetFileEndpointPostfix"`
 }
 

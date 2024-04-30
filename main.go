@@ -9,7 +9,10 @@ import (
 )
 
 func main() {
-	AppConfiguration.JsonConfigurationProvider{}.Initialize("appSettings.json")
+	err := AppConfiguration.JsonConfigurationProvider{}.Initialize("appSettings.json")
+	if err != nil {
+		panic(err)
+	}
 
 	go Subdomain.Start()
 
@@ -20,7 +23,7 @@ func main() {
 	http.HandleFunc("/get", httpHandlers.Get)
 	http.HandleFunc("/health", httpHandlers.RespondToAHealthCheck)
 
-	err := http.ListenAndServe(PORT, nil)
+	err = http.ListenAndServe(PORT, nil)
 	if err != nil {
 		fmt.Println(err)
 		return

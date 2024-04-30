@@ -95,9 +95,9 @@ func ConvertVideoToM3U8Playlist(filename string, readFrom io.Reader, mediaConver
 }
 
 func formatPlaylist(playlist string, folderId string) (string, error) {
-	hostUrl := AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Server.HostUrl
+	appAddress := AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Server.AppAddress
 	endpointPostfix := AppConfiguration.JsonConfigurationProvider{}.GetConfiguration().Server.GetFileEndpointPostfix
-	url := fmt.Sprintf("%s/%s%s_", hostUrl, endpointPostfix, folderId)
+	url := fmt.Sprintf("%s/%s%s_", appAddress, endpointPostfix, folderId)
 
 	sb := strings.Builder{}
 

@@ -8,16 +8,17 @@ import (
 	"path"
 )
 
-func SetupTestDirConfiguration(testTemporaryDirectory string) {
+func SetupTestDirConfiguration(testTemporaryDirectory string) AppConfiguration.JsonConfigurationProvider {
 	configurationPath := createConfigurationInTestFolder(testTemporaryDirectory, "testSettings.json")
 	AppConfiguration.JsonConfigurationProvider{}.Initialize(configurationPath)
+	return AppConfiguration.JsonConfigurationProvider{}
 }
 
 func createConfigurationInTestFolder(tempFolderPath string, configurationFilename string) string {
 	configurationRoot := ConfigurationModels.AppConfiguration{
 		Server: ConfigurationModels.ServerConfiguration{
 			Port:                   9001,
-			HostUrl:                "https://example.com",
+			AppAddress:             "https://example.com",
 			GetFileEndpointPostfix: "get?filename=",
 		},
 		Storage: ConfigurationModels.StorageConfiguration{
